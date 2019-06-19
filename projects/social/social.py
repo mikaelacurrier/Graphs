@@ -1,4 +1,5 @@
 import random
+from util import Queue
 
 class User:
     def __init__(self, name):
@@ -41,14 +42,14 @@ class SocialGraph:
         The number of users must be greater than the average number of friendships.
         """
         # Reset graph
-        self.lastID = 0
-        self.users = {}
-        self.friendships = {}
+        # self.lastID = 0
+        # self.users = {}
+        # self.friendships = {}
 
 
         # Add users
         for i in range(numUsers):
-            self.addUser(random.random())
+            self.addUser(self.lastID+1)
 
         # Create friendships
         for user in self.users:
@@ -72,13 +73,27 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
-        return visited
+        visited = {}
+        q = [ [userID] ]
+        v = self.friendships
 
+        for i in range(len(v)):
+            path = q.pop(0)
+            visit = path[-1]
+            branch = set(self.unvisited_edge(visit, visited))
+            for i in branch:
+                full_path = path + [i]
+                visited[i] = full_path
+                q.append(full_path)
+            if len(q) == 0:
+                break
+
+        return visited
+    def unvisited_edge(self, vertex, visited):
+        v = self.friendships
+        return [i for i in v.get(vertex) if i not in visited]
 
 if __name__ == '__main__':
-    print(random.random())
     sg = SocialGraph()
     sg.populateGraph(10, 3)
     print(sg.friendships)
